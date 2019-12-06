@@ -1,4 +1,4 @@
-class File:
+class Item:
     ID = None
     filePath_Client = None
     filePath_Server = None
@@ -8,9 +8,10 @@ class File:
     MD5 = None
     isExist_LastB = None
     isBp_Complete = None
+    isFolder = None
 
     def __init__(self, ID, filePath_Client, filePath_Server, fileSize, fileType, fileName, MD5, isExist_LastB,
-                 isBp_Complete):
+                 isBp_Complete, isFolder):
         self.ID = ID
         self.filePath_Client = filePath_Client
         self.filePath_Server = filePath_Server
@@ -20,12 +21,13 @@ class File:
         self.MD5 = MD5
         self.isExist_LastB = isExist_LastB
         self.isBp_Complete = isBp_Complete
+        self.isFolder = isFolder
 
     def print(obj):
         "打印对象的所有属性"
         print(obj.__dict__)
 
-
-fileA = File("001", "/desktop", "/20191204220814/desktop/readme.txt", "1206", "txt", "readme.txt", "qwertyuiopasdfghjkl", "False", "Yes")
-fileA.print();
-
+fileA = Item("001", "/desktop", "/20191204220814/desktop/readme.txt", "1206", "txt", "readme.txt", "qwertyuiopasdfghjkl", False, True, False)
+fileA.print()
+folderA = Item("002", "/desktop", "/20191204220814/desktop/folderA", "25374", "folder", "folderA", "mnbvcxzlkjhgfdsa", False, True, True)
+folderA.print()
