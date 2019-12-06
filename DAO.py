@@ -3,12 +3,14 @@ import pymysql
 
 class DAO:
     def __init__(self, db):
+        global database
+        database = db
         try:
-            conn = pymysql.connect(host='35.223.248.16', user='cqh', passwd='CAMRYLOVESEDGE', db=db, port=3306)
+            global cur
+            conn = pymysql.connect(host='35.223.248.16', user='cqh', passwd='CAMRYLOVESEDGE', db=database, port=3306)
             cur = conn.cursor()
         except:
             print("Fail to connect database")
-        global cur
 
         #sql = "select * from test.20191204220814"
         #cur.execute(sql)
@@ -50,5 +52,11 @@ class DAO:
         return res
 
     def upload_data(self, table_id, file_path_client, file_path_server, file_size, file_type, filename, md5_code, is_exist):
-        sql="INSERT INTO "
-        # Working on it .........................................
+        sql = "INSERT INTO %s.%s VALUES (NULL, '%s', '%s', '%s', '%s', '%s', '%s', %s, %s)"\
+            % (database, table_id, file_path_client, file_path_server, file_size, file_type, filename, md5_code, is_exist, 'False')
+        sql1 = "INSERT INTO test.20191205163717 VALUES (NULL, " \
+               "'filePath', 'filePathServer', 'size', 'type', 'name', 'null', False, False)"
+        cur.execute(sql1)
+        print(sql1)
+        cur.execute(sql)
+        print(sql)

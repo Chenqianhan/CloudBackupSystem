@@ -6,10 +6,12 @@ import DAO
 
 class Scanner:
     def __init__(self, path, db):
+        global dao
+        global table_id
         # Create a table id, which is also version_id
         table_id = time.strftime("%Y%m%d%H%M%S", time.localtime())
         # father_path=os.path.abspath(os.path.dirname(os.getcwd())+os.path.sep+".")
-        global data
+        # data -> 'md5',[filename, server_path]
         data = dict()
 
         #Check version
@@ -33,14 +35,14 @@ class Scanner:
                 print('*** version file open error:')
 
         dao = DAO.DAO(db)
-        # dao.create_table(table_id)
+        dao.create_table(table_id)
 
         # Don't care the warning on last_version, that's bullshit
         # Whether is the first time
         if last_version is "null":
-            print(last_version)
+            file_scanner_initial(path, "")
         else:
-            res=dao.request_data(last_version)
+            res = dao.request_data(last_version)
             if len(res) < 1:
                 return
             else:
@@ -48,43 +50,76 @@ class Scanner:
                     md = row[0]
                     filename_serverpath=[row[1], row[2]]
                     data[md] = filename_serverpath
-            file_scanner(path, "")
+            file_scanner(path, "", data)
+
+        dao.disconnect()
 
 
-
-def file_scanner(path, prefix):
+def file_scanner(path, prefix, data):
     if not os.path.exists(path):
         raise FileNotFoundError('Path %s not exist' % path)
 
     if os.path.isfile(path):
         file_md5 = calMD5ForFile(path)
         if file_md5 in data:
-            temp=data[file_md5]
+            temp = data[file_md5]
+            # If exists
             if os.path.basename(path) == temp[0]:
                 # Working on it ..................................................................
+                dao.upload_data(table_id, path, temp[1], os.path.getsize(path), 'File',
+                                os.path.basename(path), file_md5, True)
+            # If names don't match but md5 match, it's probably md5 coincidence, or mostly name modification
+            else:
+                # server path generator()
+                dao.upload_data(table_id, path, 'path depends', os.path.getsize(path), 'File',
+                                os.path.basename(path), file_md5, False)
+                # FTP operation(), upload file
+                # Then update this by isBp_completed = True
+        else:
+            # When it's a new or modified file
+            # server path generator()
+            dao.upload_data(table_id, path, 'path depends', os.path.getsize(path), 'File',
+                            os.path.basename(path), file_md5, False)
+            # FTP operation(), upload file
+            # Then update this by isBp_completed = True
+
         # Check
         # print(prefix+file_md5)
         # print(prefix+os.path.abspath(path))
         # print(os.path.basename(path))
         # file_extractor(os.path.abspath(path))
     elif os.path.isdir(path):
-        # Check
-        # print(prefix+os.path.abspath(path))
-        folder_operation(path)
+        # Check gen
+        # server path generator
+        dao.upload_data(table_id, path, 'path depends', os.path.getsize(path), 'Folder',
+                        os.path.basename(path), 'null', False)
+        # FTP operation(), if not exist: create a folder on server.
+        # Then update this by isBp_completed
         for it in os.scandir(path):
             file_scanner(it, '---'+prefix)
 
+
+def file_scanner_initial(path, prefix):
+    if not os.path.exists(path):
+        raise FileNotFoundError('Path %s not exist' % path)
+
+    if os.path.isfile(path):
+        file_md5 = calMD5ForFile(path)
+        # server path generator
+        dao.upload_data(table_id, path, 'path depends', os.path.getsize(path), 'File',
+                        os.path.basename(path), file_md5, False)
+        # FTP operation()
+        # Update is
+    elif os.path.isdir(path):
+        # server path generator
+        dao.upload_data(table_id, path, 'path depends', os.path.getsize(path), 'Folder',
+                        os.path.basename(path), 'null', False)
+        # FTP operation(), if not exist: create a folder on server.
+        # Then update this by isBp_completed
+        for it in os.scandir(path):
+            file_scanner_initial(it, '---'+prefix)
+
 # Dir cannot be input md5
-
-
-# One function that judge whether the whole path is changed using md5
-def file_operation(path):
-    file_path = path
-    file_name = os.path.basename(path)
-    file_size= os.path.getsize(path)
-    type = 'File'
-    #print(file_name)
-    #print(file_size)
 
 
 def folder_operation(path):
