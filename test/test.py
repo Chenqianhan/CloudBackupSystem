@@ -1,16 +1,17 @@
 import DAO
+import FTP
 import os
-dao = DAO.DAO('test')
-table_id='20191206020726'
-#table_id = '%s' % id
-#dao.test_sql('Begin')
-#dao.upload_data(table_id, 'file_path_client', 'file_path_server000', 'file_size1111',
- #               'file_type', 'filename1', 'md5_code', 'False')
-#path = "/home/parallels/Pictures"
-
-#dao.upload_data(table_id, path, 'path_depends111111', os.path.getsize(path), 'Folder',
- #               os.path.basename(path), 'null', 'False')
-#dao.test_sql('Commit')
-#print("insert successfully")
-res = dao.request_data('20191206020726', 'test')
-print(res)
+ftp_user = 'root'
+ftp_pwd = 'CAMRYLOVESEDGE'
+host_name = "35.223.248.16"
+print("1")
+ftp = FTP.FTP(ftp_user, ftp_pwd, 22)
+path = "/home/parallels/Pictures"
+name = '1.jpg'
+sp = "/home/dataspace/Alice"
+sp=os.path.join(sp,name)
+path=os.path.join(path, name)
+print(sp)
+print(path)
+ftp.uploader(path, sp)
+ftp.disconnect()
