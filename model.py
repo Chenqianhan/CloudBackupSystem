@@ -45,7 +45,7 @@ class User:
         self.useRootPathAtServer = useRootPathAtServer
         self.userDatabaseName = userDatabaseName
 
-# curr_user = User(1, "Alice", "aldskfj23lkhagd", "/home/dataspace/1", 1)
+# curr_user = User("Alice_qwertyu", "Alice", "aldskfj23lkhagd", "/home/dataspace/Alice_qwertyu", "Alice_qwertyu")
 
 
 class Backup:

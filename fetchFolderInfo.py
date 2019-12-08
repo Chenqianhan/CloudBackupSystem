@@ -10,7 +10,8 @@ def fetch_folder_content(parent_folder, curr_backup):
     cursor = DatabaseController.connect_database()
     # select * from curr_backup.backupDBTableName where filePath_Client = parent_folder.filePath_Client + parent_folder.fileName
     parent_folder_path = "'" + parent_folder.filePath_Client + parent_folder.fileName + "'"
-    sql = "select * from %s where filePath_Client = %s", curr_backup.backupDBTableName, parent_folder_path
+    db_table_path = curr_user.userDatabaseName + "." + curr_backup.backupDBTableName
+    sql = "select * from %s where filePath_Client = %s", db_table_path, parent_folder_path
     res_file_list = []
     try:
         cursor.execute(sql)
@@ -22,5 +23,5 @@ def fetch_folder_content(parent_folder, curr_backup):
             curr_file.print()
     except:
         print("Error: unable to fetch data")
-    db_access.disconnect()
+    DatabaseController.disconnect()
     return res_file_list
