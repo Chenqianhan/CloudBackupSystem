@@ -2,8 +2,13 @@ import DAO
 import Scanner
 # Checking md5 doesn't reflect file name change
 if __name__ == '__main__':
-    path = "/home/parallels/pycharm-community-2019.2.4"
-    # path = "/home/parallels/Pictures"
+    path = "/home/parallels/PycharmProjects"
+    user = 'cqh'
+    pwd = 'CAMRYLOVESEDGE'
+    ftp_user = 'root'
+    ftp_pwd = 'CAMRYLOVESEDGE'
+    port = 22
+
     db = 'test'
-    s = Scanner.Scanner(path, db)
+    s = Scanner.Scanner(path, db, user, pwd, ftp_user, ftp_pwd, port)
 
